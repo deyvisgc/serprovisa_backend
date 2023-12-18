@@ -35,6 +35,16 @@ export class ProductsController {
     return this.productsService.findLastProducts();
   }
   @UseGuards(JwtAuthGuard)
+  @Get('countProducts')
+  @HttpCode(HttpStatus.ACCEPTED)
+  getCountProducto(
+    @Query('limit') limit = 10,
+    @Query('offset') offset = 0,
+    @Query("page") page = 1,
+  ) {
+    return this.productsService.obtenerTotalProducto(limit, offset, page);
+  }
+  @UseGuards(JwtAuthGuard)
   @Get('report')
   @HttpCode(HttpStatus.ACCEPTED)
   getReport() {

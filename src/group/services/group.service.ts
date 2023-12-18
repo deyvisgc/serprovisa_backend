@@ -114,10 +114,12 @@ export class GroupService {
   ) {
     const sheetName = 'Grupo';
     const columnHeaders = [
+      'Codigo Familia',
+      'Descripción Familia',
+      'Codigo Linea',
+      'Descripción Linea',
       'Codigo Grupo',
       'Descripción Grupo',
-      'Familia',
-      'Linea',
       'Codigo en Conjunto',
       'Total Productos',
       'Fecha Registro'
@@ -134,10 +136,14 @@ export class GroupService {
     const listGrupo = [];
     data.registros.forEach((row) => {
       const ro = [
+        row.cod_fam,
+        row.des_fam,
+        row.cod_line,
+        row.des_line,
         row.cod_gru,
         row.des_gru,
-        `${row.cod_fam}-${row.des_fam}`,
-        `${row.cod_line}-${row.des_line}`,
+        // `${row.cod_fam}-${row.des_fam}`,
+        // `${row.cod_line}-${row.des_line}`,
         row.cod_gru_final,
         row.total_product,
         row.fec_regis

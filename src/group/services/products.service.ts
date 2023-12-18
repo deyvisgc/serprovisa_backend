@@ -10,8 +10,11 @@ export class ProductsService {
   findAll(limit: number, offset: number, page: number, fech_ini: string, fech_fin: string, familia: number, linea: number, group:number, users:number): Promise<Product[]> {
       return this.productRepository.findAll(limit, offset, page, fech_ini, fech_fin, familia, linea, group, users)
   }
-  findLastProducts () {
-    return this.productRepository.findLastProducts()
+  async findLastProducts () {
+    return  await this.productRepository.findLastProducts()
+  }
+  async obtenerTotalProducto (limit: number, offset: number, page: number) {
+    return await this.productRepository.obtenerTotalProducto(limit, offset, page)
   }
   findReport () {
     return this.productRepository.findReport()
@@ -93,9 +96,12 @@ export class ProductsService {
   async exportarExcel( fech_ini: string, fech_fin: string, familia: number, linea: number, group:number, users:number ) {
     const sheetName = 'Productos';
     const columnHeaders = [
-      'Familia',
-      'Linea',
-      'Grupo',
+      'Codigo Familia',
+      'Descripción Familia',
+      'Codigo Linea',
+      'Descripción Linea',
+      'Codigo Grupo',
+      'Descripción Grupo',
       'Codigo Producto',
       'Nombre Producto',
       'Detalle Producto',
@@ -106,9 +112,15 @@ export class ProductsService {
     const listProducto = [];
     producto.registros.forEach((row) => {
       const ro = [
-        `${row.cod_fam}-${row.des_fam}`,
-        `${row.cod_line}-${row.des_line}`,
-        `${row.cod_gru}-${row.des_gru}`,
+        row.cod_fam,
+        row.des_fam,
+        row.cod_line,
+        row.des_line,
+        row.cod_gru,
+        row.des_gru,
+        // `${row.cod_fam}-${row.des_fam}`,
+        // `${row.cod_line}-${row.des_line}`,
+        // `${row.cod_gru}-${row.des_gru}`,
         row.cod_product,
         row.name_product,
         row.des_product,

@@ -147,11 +147,12 @@ export class AdminRepositoryImplement implements AdminRepositoryInterface {
     });
   }
   delete(id: number): Promise<boolean> {
-    const sql = `DELETE FROM ${TableEnum.USERS} WHERE id_user = ?`;
-    const values = [id];
     return new Promise(async (resolve, reject) => {
       try {
-        await this.connectionDB.query(sql, values);
+        const sqlDelete = `DELETE FROM ${TableEnum.USERS_PERMISOS} where user_id = ?`;
+        await this.connectionDB.query(sqlDelete, [id]);
+        const sql = `DELETE FROM ${TableEnum.USERS} WHERE id_user = ?`;
+        await this.connectionDB.query(sql, [id]);
         resolve(true);
       } catch (error) {
         reject(error);

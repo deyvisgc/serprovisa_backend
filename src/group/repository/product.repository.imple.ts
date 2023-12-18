@@ -8,6 +8,52 @@ import * as mysql from 'mysql2';
 @Injectable()
 export class ProductoRepositoryImplement implements ProductoRepositoryInterface {
     constructor( @Inject(ConstantsEnum.provideConnection) private connectionDB: mysql.Pool) {}
+    obtenerTotalProducto(limit: number, offset: number, page: number): Promise<any> {
+        offset = (page - 1) * limit;
+        const sql = `
+        SELECT
+        us.id_user,
+        us.us_full_name, 
+        fa.cod_fam,
+        fa.des_fam,
+        li.cod_line,
+        li.des_line, 
+        gr.cod_gru,
+        gr.des_gru,
+        SUM(gr.total_product) as total_productos
+        FROM
+        ${TableEnum.PRODUCTO} as pr
+        INNER JOIN ${TableEnum.GRUPO} as gr ON pr.group_id_group = gr.id_grou
+        INNER JOIN ${TableEnum.USERS} as us ON pr.user_id_user = us.id_user
+        INNER JOIN ${TableEnum.FAMILIA} as fa ON gr.fam_id_familia = fa.id_fam
+        INNER JOIN ${TableEnum.LINEA} as li ON gr.linea_id_line = li.id_line
+        WHERE
+            pr.status_product = 1
+        GROUP BY
+            us.id_user,
+            us.us_full_name, 
+            fa.cod_fam, fa.des_fam, 
+            li.cod_line, li.des_line, 
+            gr.cod_gru, gr.des_gru
+        ORDER BY
+         total_productos DESC 
+        LIMIT ${limit} OFFSET ${offset}
+        ` ; 
+ 
+        return new Promise(async (resolve, reject) => {
+            try {
+                const res = await this.connectionDB.query(sql);
+                const result = {
+                    limit,
+                    offset,
+                    registros: res[0]
+                }
+                resolve(result);
+              } catch (error) {
+                reject(error);
+            }
+        });
+    }
     findReport(): Promise<any[]> {
         const sql = `SELECT
                 MONTH(fech_regis) AS mes,

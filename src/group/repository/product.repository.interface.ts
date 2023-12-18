@@ -11,4 +11,5 @@ export interface ProductoRepositoryInterface {
     delete(id: number): Promise<boolean>;
     findLastProducts(): Promise<any[]>;
     findReport(): Promise<any[]>;
+    obtenerTotalProducto(limit: number, offset: number, page: number): Promise<any[]>;
   }
