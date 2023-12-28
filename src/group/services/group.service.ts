@@ -93,7 +93,14 @@ export class GroupService {
       res.status = true;
       return res;
     } catch (err) {
-      throw new InternalServerErrorException('Error', err.message);
+      if (err.message.includes('foreign key constraint fails')) {
+        throw new ConflictException(
+          'Error',
+          `Imposible eliminar el grupo. Hay productos vinculados a él. Desvincula o elimina los productos antes de intentar nuevamente`,
+        );
+      } else {
+        throw new InternalServerErrorException(err.message);
+      }
     }
   }
   async findByIdLinea(id: number): Promise<Group[]> {

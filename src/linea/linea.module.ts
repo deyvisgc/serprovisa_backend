@@ -5,6 +5,7 @@ import { LineaController } from './controllers/linea/linea.controller';
 
 @Module({
   providers: [LineaService, LineaRepositoryImplement],
+  exports: [LineaService],
   controllers: [LineaController]
 })
 export class LineaModule {}

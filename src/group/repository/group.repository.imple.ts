@@ -5,10 +5,13 @@ import { GroupRepositoryInterface } from './group.repository.interface';
 import { Group } from '../entities/group.entity';
 import { CreateGroup, UpdateGroup } from '../dtos/group.dto';
 import * as mysql2 from 'mysql2/promise';
+import { FamilyService } from '../../family/services/family.service';
+import { LineaService } from '../../linea/services/linea/linea.service';
 @Injectable()
 export class GroupRepositoryImplement implements GroupRepositoryInterface {
   constructor(
     @Inject(ConstantsEnum.provideConnection) private connectionDB: mysql.Pool,
+    private familService: FamilyService, private lineaService: LineaService
   ) {}
   findAll(
     limit: number,
@@ -108,21 +111,31 @@ export class GroupRepositoryImplement implements GroupRepositoryInterface {
       }
     });
   }
-  update(id: number, group: UpdateGroup): Promise<boolean> {
-    const sql = `UPDATE ${TableEnum.GRUPO} set cod_gru = ?, des_gru = ?, linea_id_line = ? WHERE id_grou = ?`;
-
-    const values = [group.cod_gru.toUpperCase(), group.des_gru.toUpperCase(), group.id_linea, id];
+  async update(id: number, group: UpdateGroup): Promise<boolean> {
+    const sql = `UPDATE ${TableEnum.GRUPO} set cod_gru = ?, des_gru = ?, linea_id_line = ?, cod_gru_final = ? WHERE id_grou = ?`;
     return new Promise(async (resolve, reject) => {
       try {
-        await this.connectionDB.query(sql, values);
-        resolve(true);
+        const family = await this.familService.findById(group.id_familia)
+        const linea = await this.lineaService.findById(group.id_linea)
+        if (!family || !linea) {
+          resolve(false)
+        } else {
+          const codFami = family.cod_fam;
+          const codLine = linea.cod_line;
+          const codGrupo = group.des_gru.substring(0, 3);
+          const cod_gru_final = `${codFami}-${codLine}-${codGrupo.toUpperCase()}`;
+          const values = [group.cod_gru.toUpperCase(), group.des_gru.toUpperCase(), group.id_linea,cod_gru_final,id];
+          await this.connectionDB.query(sql, values);
+          resolve(true);
+        }
       } catch (error) {
         reject(error);
       }
     });
   }
   delete(id: number): Promise<boolean> {
-    const sql = `UPDATE ${TableEnum.GRUPO} set status_gru = 0 WHERE id_grou = ?`;
+    //const sql = `UPDATE ${TableEnum.GRUPO} set status_gru = 0 WHERE id_grou = ?`;
+    const sql = `DELETE FROM ${TableEnum.GRUPO} WHERE id_grou = ?`;
     const values = [id];
     return new Promise(async (resolve, reject) => {
       try {

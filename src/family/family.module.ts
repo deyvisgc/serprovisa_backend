@@ -4,6 +4,7 @@ import { FamilyRepositoryImplement } from './repository/family.repository.imple'
 import { FamilyController } from './controllers/family.controller';
 @Module({
   providers: [FamilyService, FamilyRepositoryImplement],
+  exports: [FamilyService],
   controllers: [FamilyController]
 })
 export class FamilyModule {}
