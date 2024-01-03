@@ -20,7 +20,7 @@ export class ProductoRepositoryImplement implements ProductoRepositoryInterface 
         li.des_line, 
         gr.cod_gru,
         gr.des_gru,
-        SUM(gr.total_product) as total_productos
+        gr.total_product
         FROM
         ${TableEnum.PRODUCTO} as pr
         INNER JOIN ${TableEnum.GRUPO} as gr ON pr.group_id_group = gr.id_grou
@@ -36,7 +36,7 @@ export class ProductoRepositoryImplement implements ProductoRepositoryInterface 
             li.cod_line, li.des_line, 
             gr.cod_gru, gr.des_gru
         ORDER BY
-         total_productos DESC 
+         gr.total_product DESC 
         LIMIT ${limit} OFFSET ${offset}
         ` ; 
  
