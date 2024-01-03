@@ -13,6 +13,20 @@ export class GroupRepositoryImplement implements GroupRepositoryInterface {
     @Inject(ConstantsEnum.provideConnection) private connectionDB: mysql.Pool,
     private familService: FamilyService, private lineaService: LineaService
   ) {}
+  findAllFilters(): Promise<any> {
+    const sql = `SELECT * FROM ${TableEnum.GRUPO}`;
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.connectionDB.query(sql);
+        const result = {
+          registros: res[0],
+        };
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
   findAll(
     limit: number,
     offset: number,
@@ -21,6 +35,7 @@ export class GroupRepositoryImplement implements GroupRepositoryInterface {
     fech_fin: string,
     familia: number,
     linea: number,
+    grupo: number
   ): Promise<any> {
     offset = (page - 1) * limit;
     let query = `SELECT gru.*, fa.cod_fam, fa.des_fam, li.cod_line, li.des_line FROM ${TableEnum.GRUPO} as gru inner join ${TableEnum.LINEA} as li on gru.linea_id_line = li.id_line 
@@ -46,6 +61,10 @@ export class GroupRepositoryImplement implements GroupRepositoryInterface {
         if (linea > 0) {
           query += ` AND linea_id_line = ${mysql2.escape(linea)}`;
           queryCount += ` AND linea_id_line = ${mysql2.escape(linea)}`;
+        }
+        if (grupo > 0) {
+          query += ` AND id_grou  = ${mysql2.escape(grupo)}`;
+          queryCount += ` AND id_grou  = ${mysql2.escape(grupo)}`;
         }
         query += ` ORDER BY gru.id_grou asc LIMIT ${limit} OFFSET ${offset}`;
         const res = await this.connectionDB.query(query);
@@ -124,6 +143,7 @@ export class GroupRepositoryImplement implements GroupRepositoryInterface {
           const codLine = linea.cod_line;
           const codGrupo = group.des_gru.substring(0, 3);
           const cod_gru_final = `${codFami}-${codLine}-${codGrupo.toUpperCase()}`;
+          console.log(cod_gru_final)
           const values = [group.cod_gru.toUpperCase(), group.des_gru.toUpperCase(), group.id_linea,cod_gru_final,id];
           await this.connectionDB.query(sql, values);
           resolve(true);

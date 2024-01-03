@@ -24,6 +24,7 @@ export class GroupService {
     fech_fin: string,
     familia: number,
     linea: number,
+    grupo: number
   ): Promise<Group[]> {
     return this.groupRepository.findAll(
       limit,
@@ -33,8 +34,13 @@ export class GroupService {
       fech_fin,
       familia,
       linea,
+      grupo
     );
   }
+  findAllFilters(): Promise<Group[]> {
+    return this.groupRepository.findAllFilters();
+  }
+  
   async findById(id: number): Promise<Group> {
     const grupo = await this.groupRepository.findById(id);
     if (!grupo) {
@@ -113,7 +119,7 @@ export class GroupService {
     }
     return linea;
   }
-  async exportarExcel(
+  async exportarExcel_v1(
     fech_ini: string,
     fech_fin: string,
     familia: number,
@@ -138,7 +144,8 @@ export class GroupService {
       fech_ini,
       fech_fin,
       familia,
-      linea
+      linea,
+      0
     );
     const listGrupo = [];
     data.registros.forEach((row) => {
@@ -153,6 +160,51 @@ export class GroupService {
         // `${row.cod_line}-${row.des_line}`,
         row.cod_gru_final,
         row.total_product,
+        row.fec_regis
+      ];
+      listGrupo.push(ro);
+    });
+    return await this.importarService.exportarExcel(
+      sheetName,
+      columnHeaders,
+      listGrupo
+    );
+  }
+  async exportarExcel(
+    fech_ini: string,
+    fech_fin: string,
+    familia: number,
+    linea: number
+  ) {
+    const sheetName = 'Grupo';
+    const columnHeaders = [
+      'Codigo Familia',
+      'Descripción Familia',
+      'Codigo Linea',
+      'Descripción Linea',
+      'Codigo Grupo',
+      'Descripción Grupo',
+      'Fecha Registro'
+    ];
+    const data = await this.groupRepository.findAll(
+      100000,
+      0,
+      1,
+      fech_ini,
+      fech_fin,
+      familia,
+      linea, 
+      0
+    );
+    const listGrupo = [];
+    data.registros.forEach((row) => {
+      const ro = [
+        row.cod_fam,
+        row.des_fam,
+        row.cod_line,
+        row.des_line,
+        row.cod_gru,
+        row.des_gru,
         row.fec_regis
       ];
       listGrupo.push(ro);
@@ -185,7 +237,8 @@ export class GroupService {
       fech_ini,
       fech_fin,
       familia,
-      linea
+      linea,
+      0
     );
     const listGrupo = [];
     data.registros.forEach((row) => {

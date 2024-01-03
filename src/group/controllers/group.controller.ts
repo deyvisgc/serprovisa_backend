@@ -16,10 +16,18 @@ export class GroupController {
       @Query("fecha_fin") fecha_fin = "",
       @Query("familia") familia = "",
       @Query("linea") linea = "",
+      @Query("grupo") grupo = ""
     ) {
       const fam = familia !== "" ? parseInt(familia, 10) : 0
       const lin = linea !== "" ? parseInt(linea, 10) : 0
-      return this.groupService.findAll(limit, offset, page, fecha_ini, fecha_fin, fam, lin);
+      const group = grupo !== "" ? parseInt(grupo, 10) : 0
+      return this.groupService.findAll(limit, offset, page, fecha_ini, fecha_fin, fam, lin, group);
+    }
+    @UseGuards(JwtAuthGuard)
+    @Get("filters")
+    findAllFilters(
+    ) {
+      return this.groupService.findAllFilters();
     }
     @UseGuards(JwtAuthGuard)
     @Get("export/excel")
