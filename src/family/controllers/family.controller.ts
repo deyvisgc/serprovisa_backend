@@ -15,34 +15,6 @@ export class FamilyController {
     ) {
       return this.familyService.findAll(limit, offset, page);
     }
-    // @UseGuards(JwtAuthGuard)
-    // @Get('export/excel')
-    // async exportExcel(@Res() res: Response): Promise<void> {
-
-    //   try {
-    //     const buffer = await this.familyService.exportarExcel();
-    //     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    //     res.setHeader('Content-Disposition', 'attachment; filename=nombre-del-archivo.xlsx');
-    //     res.send(buffer);
-    //   } catch (error) {
-    //     console.error('Error al generar el PDF:', error);
-    //     res.status(500).send(error);
-    //   }
-    // }
-    // @UseGuards(JwtAuthGuard)
-    // @Get('export/pdf')
-    // async generatePdf(@Res() res: Response): Promise<void> {
-    //   try {
-    //     const pdfBuffer = await this.familyService.exportarPdf();
-  
-    //     res.setHeader('Content-Type', 'application/pdf');
-    //     res.setHeader('Content-Disposition', 'attachment; filename=example.pdf');
-    //     res.send(Buffer.from(pdfBuffer));
-    //   } catch (error) {
-    //     console.error('Error al generar el PDF:', error);
-    //     res.status(500).send('Error al generar el PDF');
-    //   }
-    // }
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     @HttpCode(HttpStatus.ACCEPTED)

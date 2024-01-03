@@ -21,6 +21,18 @@ export class LineaRepositoryImplement implements LineaRepositoryInterface {
       }
     });
   }
+  countGrupoXIdLinea(id: number): Promise<any> {
+    const sql = `SELECT sum(total_product) as total_product FROM ${TableEnum.GRUPO} where linea_id_line = ?;`;
+    const values = [id];
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.connectionDB.query(sql, values);
+        resolve(res[0][0].total_product);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
   findAll(limit: number, offset: number, page: number): Promise<any> {
     offset = (page - 1) * limit;
     let sql = `SELECT li.*, fa.cod_fam, fa.des_fam FROM ${TableEnum.LINEA} as li inner join 
@@ -94,7 +106,7 @@ export class LineaRepositoryImplement implements LineaRepositoryInterface {
     });
   }
   delete(id: number): Promise<boolean> {
-    const sql = `UPDATE  ${TableEnum.LINEA} set status_line = 0 WHERE id_line = ? `;
+    const sql = `DELETE FROM ${TableEnum.LINEA} WHERE id_line = ? `;
     const values = [id];
     return new Promise(async (resolve, reject) => {
       try {

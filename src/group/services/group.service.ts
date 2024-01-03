@@ -9,11 +9,13 @@ import { Group } from '../entities/group.entity';
 import { CreateGroup, UpdateGroup } from '../dtos/group.dto';
 import { Response } from '../../response/response';
 import { ImportarService } from '../../common/importar/importar.service';
+import { ProductsService } from './products.service';
 
 @Injectable()
 export class GroupService {
   constructor(
     private groupRepository: GroupRepositoryImplement,
+    private productoService: ProductsService,
     private importarService: ImportarService,
   ) {}
   findAll(
@@ -67,7 +69,12 @@ export class GroupService {
   }
   async update(id: number, group: UpdateGroup): Promise<Response> {
     let res = new Response();
-    const exist = this.findById(id);
+    const lsProduct =  await this.productoService.countProductoXIdGrupo(id)
+    if (lsProduct.length > 0) throw new ConflictException(
+      'Error',
+      `El Grupo a actualizar ya cuenta con productos vinculados, no se puede actualizar`,
+    );
+    const exist = await this.findById(id);
     if (exist) {
       try {
         await this.groupRepository.update(id, group);
@@ -102,7 +109,7 @@ export class GroupService {
       if (err.message.includes('foreign key constraint fails')) {
         throw new ConflictException(
           'Error',
-          `Imposible eliminar el grupo. Hay productos vinculados a él. Desvincula o elimina los productos antes de intentar nuevamente`,
+          `Imposible eliminar el grupo. Hay Familias, lineas y productos vinculados a él. Desvincula o elimina antes de intentar nuevamente`,
         );
       } else {
         throw new InternalServerErrorException(err.message);

@@ -171,6 +171,19 @@ export class ProductoRepositoryImplement implements ProductoRepositoryInterface 
           }
         });
     }
+    countProductoXIdGrupo(id: number): Promise<any> {
+        const sql = `SELECT * FROM ${TableEnum.PRODUCTO} where group_id_group = ? and status_product = 1`;
+        const values = [id];
+        return new Promise(async (resolve, reject) => {
+          try {
+            const res = await this.connectionDB.query(sql, values);
+            console.log(res)
+            resolve(res[0]);
+          } catch (error) {
+            reject(error);
+          }
+        });
+    }
     create(product: CreateProductDto[]): Promise<boolean> {
         let query = `INSERT INTO ${TableEnum.PRODUCTO} (cod_product, name_product, des_product, status_product, group_id_group, user_id_user, fech_regis) VALUES (?, ?, ?, ?, ?, ?, ?)` ;
         let errors = []

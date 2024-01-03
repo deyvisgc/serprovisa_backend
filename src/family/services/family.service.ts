@@ -41,6 +41,11 @@ export class FamilyService {
   }
   async update(id: number, family: UpdateFamily): Promise<Response> {
     let res = new Response();
+    const existGrupo = await this.familyRepository.countGrupoXIdFamilia(id)
+    if (existGrupo > 0) throw new ConflictException(
+        'Error',
+        `La familia a actualizar ya cuenta con productos vinculados, no se puede actualizar`,
+    );
     const exist = this.findById(id);
     if (exist) {
       try {
@@ -72,7 +77,11 @@ export class FamilyService {
       res.status = true;
       return res;
     } catch (err) {
-      throw new InternalServerErrorException('Error', err.message);
+      if (err.message.includes("foreign key constraint fails")) {
+        throw new ConflictException('Error', `Imposible eliminar la familia. Hay lineas y grupos vinculados a él. Desvincula o elimine antes de intentar nuevamente`);
+      } else {
+        throw new InternalServerErrorException(err.message);
+      }
     }
   }
   // async exportarExcel() {

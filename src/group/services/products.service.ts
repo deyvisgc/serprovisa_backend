@@ -26,7 +26,10 @@ export class ProductsService {
       }
       return producto
   }
-
+  async countProductoXIdGrupo(id: number): Promise<any> {
+    const producto = await this.productRepository.countProductoXIdGrupo(id);
+    return producto
+}
   async create(group: CreateProductDto[]): Promise<Response> {
       let res = new Response()
       try {

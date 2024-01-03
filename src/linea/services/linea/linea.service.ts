@@ -44,6 +44,11 @@ export class LineaService {
     }
     async update(id: number, linea: UpdateLinea): Promise<Response>  {
         let res = new Response()
+        const existGrupo = await this.lineaRepository.countGrupoXIdLinea(id)
+        if (existGrupo > 0) throw new ConflictException(
+            'Error',
+            `La linea a actualizar ya cuenta con productos vinculados, no se puede actualizar`,
+          );
         const exist = this.findById(id);
         if (exist) {
             try {
@@ -73,7 +78,11 @@ export class LineaService {
             res.status = true
             return res;
        }catch (err) {
-          throw new InternalServerErrorException('Error', err.message);
+        if (err.message.includes("foreign key constraint fails")) {
+            throw new ConflictException('Error', `Imposible eliminar la linea. Hay grupos vinculados a él. Desvincula o elimine antes de intentar nuevamente`);
+        } else {
+            throw new InternalServerErrorException(err.message);
+        }
        }
     }
 }

@@ -78,7 +78,7 @@ export class FamilyRepositoryImplement implements FamilyRepositoryInterface {
     });
   }
   delete(id: number): Promise<boolean> {
-    const sql = `UPDATE ${TableEnum.FAMILIA} set status_fam = 0 WHERE id_fam = ?`;
+    const sql = `DELETE FROM ${TableEnum.FAMILIA} WHERE id_fam = ?`;
     const values = [id];
     return new Promise(async (resolve, reject) => {
       try {
@@ -122,5 +122,17 @@ export class FamilyRepositoryImplement implements FamilyRepositoryInterface {
     } else {
       return [];
     }
+  }
+  countGrupoXIdFamilia(id: number): Promise<any> {
+    const sql = `SELECT sum(total_product) as total_product FROM ${TableEnum.GRUPO} where fam_id_familia = ?;`;
+    const values = [id];
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.connectionDB.query(sql, values);
+        resolve(res[0][0].total_product);
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 }
