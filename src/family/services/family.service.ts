@@ -78,7 +78,7 @@ export class FamilyService {
       return res;
     } catch (err) {
       if (err.message.includes("foreign key constraint fails")) {
-        throw new ConflictException('Error', `Imposible eliminar la familia. Hay lineas y grupos vinculados a él. Desvincula o elimine antes de intentar nuevamente`);
+        throw new ConflictException('Error', `Imposible eliminar la familia. Hay lineas vinculados a él. Desvincula o elimine antes de intentar nuevamente`);
       } else {
         throw new InternalServerErrorException(err.message);
       }

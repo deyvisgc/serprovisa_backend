@@ -20,7 +20,7 @@ export class ProductoRepositoryImplement implements ProductoRepositoryInterface 
         li.des_line, 
         gr.cod_gru,
         gr.des_gru,
-        gr.total_product
+        COUNT(pr.id_prod) as product_count
         FROM
         ${TableEnum.PRODUCTO} as pr
         INNER JOIN ${TableEnum.GRUPO} as gr ON pr.group_id_group = gr.id_grou
@@ -32,11 +32,14 @@ export class ProductoRepositoryImplement implements ProductoRepositoryInterface 
         GROUP BY
             us.id_user,
             us.us_full_name, 
-            fa.cod_fam, fa.des_fam, 
-            li.cod_line, li.des_line, 
-            gr.cod_gru, gr.des_gru
+            fa.cod_fam, 
+            fa.des_fam, 
+            li.cod_line, 
+            li.des_line, 
+            gr.cod_gru, 
+            gr.des_gru
         ORDER BY
-         gr.total_product DESC 
+        us.id_user DESC 
         LIMIT ${limit} OFFSET ${offset}
         ` ; 
  
@@ -177,7 +180,6 @@ export class ProductoRepositoryImplement implements ProductoRepositoryInterface 
         return new Promise(async (resolve, reject) => {
           try {
             const res = await this.connectionDB.query(sql, values);
-            console.log(res)
             resolve(res[0]);
           } catch (error) {
             reject(error);

@@ -143,7 +143,6 @@ export class GroupRepositoryImplement implements GroupRepositoryInterface {
           const codLine = linea.cod_line;
           const codGrupo = group.des_gru.substring(0, 3);
           const cod_gru_final = `${codFami}-${codLine}-${codGrupo.toUpperCase()}`;
-          console.log(cod_gru_final)
           const values = [group.cod_gru.toUpperCase(), group.des_gru.toUpperCase(), group.id_linea,cod_gru_final,id];
           await this.connectionDB.query(sql, values);
           resolve(true);

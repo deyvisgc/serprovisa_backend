@@ -2,8 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
-  UnauthorizedException,
+  NotFoundException
 } from '@nestjs/common';
 import { AdminRepositoryImplement } from '../repository/admin.repository.imple';
 import { Users } from '../entities/users.entity';
@@ -21,7 +20,7 @@ export class AdminService {
     private adminRepository: AdminRepositoryImplement,
     private jwtService: JwtService,
     private roleService: RoleRepositoryImplement,
-  ) {}
+  ) { }
   async findAll(limit: number, offset: number, page: number): Promise<Users[]> {
     return this.adminRepository.findAll(limit, offset, page);
   }
@@ -32,7 +31,7 @@ export class AdminService {
   async findById(id: number): Promise<Users> {
     const users = await this.adminRepository.findById(id);
     if (!users) {
-      throw new NotFoundException('Error', 'El usuario no existe');
+      throw new NotFoundException('El usuario no existe');
     }
     return users;
   }
@@ -57,8 +56,7 @@ export class AdminService {
           `Email ${userBody.email} ya existe`,
         );
       }
-      console.log(err);
-      throw new InternalServerErrorException('Error', err.message);
+      throw new InternalServerErrorException(err.message);
     }
   }
 
@@ -97,11 +95,11 @@ export class AdminService {
             `Email ${users.email} ya existe`,
           );
         } else {
-          throw new InternalServerErrorException('Error', err.message);
+          throw new InternalServerErrorException(err.message);
         }
       }
     } else {
-      throw new NotFoundException('Error', 'El usuario No existe');
+      throw new NotFoundException('El usuario No existe');
     }
   }
 
@@ -114,7 +112,11 @@ export class AdminService {
       res.status = true;
       return res;
     } catch (err) {
-      throw new InternalServerErrorException('Error', err.message);
+      if (err.message.includes("foreign key constraint fails")) {
+        throw new ConflictException('Error', `Imposible eliminar este usuario. Hay productos vinculados a él. Desvincula o elimine antes de intentar nuevamente`);
+      } else {
+        throw new InternalServerErrorException(err.message);
+      }
     }
   }
   async validateUser(username: string): Promise<any> {
@@ -131,8 +133,7 @@ export class AdminService {
   async findPermisos(): Promise<Permisos[]> {
     return this.adminRepository.getPermisos();
   }
-  async findPermisosUsers(id:number): Promise<Permisos[]> {
+  async findPermisosUsers(id: number): Promise<Permisos[]> {
     return this.adminRepository.getPermisosUsers(id);
   }
-  
 }
