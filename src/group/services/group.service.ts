@@ -63,7 +63,7 @@ export class GroupService {
       if (err && err.length > 0) {
         throw new ConflictException(err);
       } else {
-        throw new InternalServerErrorException('Error', err.message);
+        throw new InternalServerErrorException(err.message);
       }
     }
   }
@@ -83,14 +83,7 @@ export class GroupService {
         res.status = true;
         return res;
       } catch (err) {
-        if (err.message.includes('Duplicate entry')) {
-          throw new ConflictException(
-            'Error',
-            `El Grupo: ${group.cod_gru.toUpperCase()} - ${group.des_gru.toUpperCase()} ya se encuentra registrado`,
-          );
-        } else {
-          throw new InternalServerErrorException(err.message);
-        }
+        throw new InternalServerErrorException(err.message);
       }
     } else {
       throw new NotFoundException('Error', 'El grupo no existe');

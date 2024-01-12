@@ -97,12 +97,6 @@ export class GroupRepositoryImplement implements GroupRepositoryInterface {
     const query = `INSERT INTO ${TableEnum.GRUPO} (cod_gru, des_gru, status_gru, linea_id_line, fec_regis, fam_id_familia, cod_gru_final) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     let errors = [];
     return new Promise(async (resolve, reject) => {
-      const validateError = await this.validateDuplicados(group);
-      if (validateError.length > 0) {
-        reject(validateError);
-        return;
-      }
-
       for (const g of group) {
         const familia = g.des_fam.substring(0, 3);
         const liena = g.des_line.substring(0, 3);
@@ -176,35 +170,5 @@ export class GroupRepositoryImplement implements GroupRepositoryInterface {
         reject(error);
       }
     });
-  }
-  async validateDuplicados(family: CreateGroup[]) {
-    const sql = `select * from ${TableEnum.GRUPO} where cod_gru = ? limit 1`;
-    const errors = [];
-
-    for (const item of family) {
-      const values = [item.cod_gru];
-
-      try {
-        const result = await this.connectionDB.query(sql, values);
-
-        if (result[0].length > 0) {
-          const error = {
-            mensaje: `El Grupo: ${item.cod_gru} - ${item.des_gru} ya se encuentra registrado`,
-          };
-          errors.push(error);
-        }
-      } catch (error) {
-        const errorObj = {
-          mensaje: `Error en la consulta SQL para ${item.cod_gru}`,
-        };
-        errors.push(errorObj);
-      }
-    }
-
-    if (errors.length > 0) {
-      return errors;
-    } else {
-      return [];
-    }
   }
 }
