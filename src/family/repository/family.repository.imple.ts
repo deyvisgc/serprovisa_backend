@@ -45,11 +45,11 @@ export class FamilyRepositoryImplement implements FamilyRepositoryInterface {
     const sql = `INSERT INTO ${TableEnum.FAMILIA} (cod_fam, des_fam, status_fam) VALUES (?, ?, ?)`;
     let errors = [];
     return new Promise(async (resolve, reject) => {
-      const validateError = await this.validateDuplicados(family);
-      if (validateError.length > 0) {
-        reject(validateError);
-        return;
-      }
+      // const validateError = await this.validateDuplicados(family);
+      // if (validateError.length > 0) {
+      //   reject(validateError);
+      //   return;
+      // }
       for (const f of family) {
         const values = [f.codigo_familia.toUpperCase(), f.descripcion_familia.toUpperCase(), '1'];
         try {

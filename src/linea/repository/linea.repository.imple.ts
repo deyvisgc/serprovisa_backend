@@ -71,11 +71,11 @@ export class LineaRepositoryImplement implements LineaRepositoryInterface {
     const sql = `INSERT INTO ${TableEnum.LINEA} (cod_line, des_line, status_line, family_id_fam) VALUES (?, ?, ?, ?)`;
     let errors = [];
     return new Promise(async (resolve, reject) => {
-      const validateError = await this.validateDuplicados(linea);
-      if (validateError.length > 0) {
-        reject(validateError);
-        return;
-      }
+      // const validateError = await this.validateDuplicados(linea);
+      // if (validateError.length > 0) {
+      //   reject(validateError);
+      //   return;
+      // }
       for (const f of linea) {
         const values = [f.cod_line.toUpperCase(), f.des_line.toUpperCase(), '1', f.id_familia];
         try {
